@@ -2,4 +2,4 @@ target/
 *.ply
 
 assets/models/dragon-xyzrgb
-assets/models/dragon
+assets/models/dragon/
