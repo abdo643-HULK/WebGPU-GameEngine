@@ -23,9 +23,12 @@ https://web.engr.oregonstate.edu/~mjb/vulkan/
 https://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/ABRIDGED.2pp.pdf
 https://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/FULL.1pp.pdf
 
+https://www.construct.net/en/blogs/ashleys-blog-2/porting-webgl-shaders-webgpu-1576
 
 https://vkguide.dev/docs/chapter-5/drawing_images/
 
+stride Attribute replacement: https://github.com/gpuweb/gpuweb/issues/2493
+coordinate System:https://github.com/gpuweb/gpuweb/issues/416
 
 
 https://www.sie.com/content/dam/corporate/jp/guideline/PS4_Web_Content-Guidelines_e.pdf
