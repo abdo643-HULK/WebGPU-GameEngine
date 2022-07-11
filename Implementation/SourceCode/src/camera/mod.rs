@@ -14,6 +14,10 @@ pub trait Object3D {
 }
 
 pub trait Camera: Object3D {
+    fn up(&self) -> glam::Vec3 {
+        glam::Vec3::Y
+    }
+
     fn get_type(&self) -> CameraType;
     fn get_zoom(&self) -> f32;
     fn get_view_matrix(&self) -> glam::Mat4;

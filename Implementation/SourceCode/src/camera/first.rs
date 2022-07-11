@@ -36,8 +36,8 @@ impl MyCamera {
     pub fn new(config: &wgpu::SurfaceConfiguration) -> Self {
         let time: SystemTime = SystemTime::now();
         MyCamera {
-            // eye: glam::vec3a(0.0, 1.0, 2.0),
             eye: glam::vec3a(0.0, 0.0, 1.0),
+            // eye: glam::vec3a(0.0, 0.7, 0.5),
             target: glam::vec3a(0.0, 0.0, 0.0),
             up: glam::Vec3A::Y,
             aspect: config.width as f32 / config.height as f32,

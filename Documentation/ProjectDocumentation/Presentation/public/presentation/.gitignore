@@ -1,0 +1,13 @@
+*.gz
+*.aux
+*.dvi
+*.fls
+*.fdb_latexmk
+*.xml
+*.bbl
+*.bcf
+*.blg
+*.xdv
+*.nav
+*.snm
+*.toc

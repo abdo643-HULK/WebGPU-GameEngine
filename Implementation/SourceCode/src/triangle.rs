@@ -92,14 +92,14 @@ struct FragmentLocals {
     color: [f32; 4],
 }
 
-pub async fn run() {
+pub fn run() {
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
         .with_title("WebGPU Triangle")
         .build(&event_loop)
         .unwrap();
 
-    let mut state = State::new(&window).await;
+    let mut state = pollster::block_on(State::new(&window));
 
     let start = SystemTime::now();
     let since_the_epoch = start
@@ -319,10 +319,10 @@ pub fn draw_triangle(
             depth_stencil_attachment: None,
         });
 
-        render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
         bind_groups.iter().enumerate().for_each(|(i, group)| {
             render_pass.set_bind_group(i as u32, group, &[]);
         });
+        render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
         // glUseProgram(shaderProgram)
         render_pass.set_pipeline(render_pipeline);
         render_pass.draw(0..state.vertices.len() as u32, 0..1);

@@ -1,0 +1,400 @@
+\def \DefaultFontSize{10pt}
+
+% PresTextLayout (hyphenation, justification)
+%   Options:
+%      0   Don't modify anything, set text as-is (no hyphenation/justification)
+%      1   Never ever hyphenate anything, but justify text.
+%      2   Hyphenate only when absolutely necessary, and justify text.
+%      3   Hyphenate words whenever possible and justify text.
+\def \PresTextLayout{2}
+
+% Set path to template and include it
+\def \templatepath{FH-Beamer-Template}
+\input{\templatepath/fhooe-beamer-wide}
+
+\def \PresTitle      {Graphics-programming with WebGPU}
+\def \PresShortTitle {Graphics-programming}
+\def \PresSubTitle   {Bachelor Mobile Computing, Summer Semester 2022}
+\def \PresAuthor     {Shehata Abd El Rahaman}
+\def \PresAuthorTitle{Shehata Abd El Rahaman}
+\def \PresHeading    {}
+\def \PresFooter     {WebGPU}
+
+% Cover image, position, height and caption
+\def \IntroImage     {assets/me.png}
+\def \IntroImageXPos {30}
+\def \IntroImageHeight{3cm}
+\def \IntroImageText {A picture of me}
+
+\newfontscheme
+
+\usepackage{animate}
+\usepackage{media9}
+\usepackage{hyperref}
+\usepackage{fontspec}
+% \usepackage{minted}
+
+\newfontfamily\DejaSans{DejaVu Sans}
+
+\begin{document}
+
+\fhfirstslide
+
+\section{Agenda}
+\fhtopicslide{Agenda}
+\fhslist{
+    \item Computer Graphics
+    \item<2- > Tech Stack
+    \item<3- > Final Result
+    \item<4- > How to draw a Triangle
+    \fhlist{
+        \item<5- > Shaders
+        \item<5- > Walkthrough
+        \item<5- > Result
+    }
+    \item<6- > Learnings
+}
+
+\section{Computer Graphics}
+\fhtopicslide{Computer Graphics}
+\subsection{Intro}
+% https://www3.cs.stonybrook.edu/~qin/courses/geometry/computer-graphics-overview.pdf
+\fhslide{
+    \fhcenter{
+        \fhblock{
+            \textbf{Computer Graphics}
+        } {
+            The creation of, manipulation of, analysis of, and interaction
+            with pictorial representations of objects and data using
+            computers.\\
+            \fhright{
+                - Dictionary of Computing
+            }
+        }
+    }
+    \only<2->{
+        Applications:
+        \fhlist{
+            \item  Entertainment: Movies, Video games
+            \item  Graphical user interface (GUI)
+            \item  Computer aided design and manufacturing (CAD/CAM)
+            \item  Medical application
+            \item  Scientific visualization / simulation
+            \item  etc..
+        }
+    }
+}
+
+\section{Tech Stack}
+\fhtopicslide{Tech Stack}
+\subsection{Language and Tech}
+\fhslide{
+    \centering
+    \fhtp{
+        \begin{figure}
+            \includegraphics[width=\linewidth, height=2.15cm, keepaspectratio]{
+                assets/rust/rust_logo.png
+            }
+            \caption{Rust logo}
+            \includegraphics[width=\linewidth, height=2.15cm, keepaspectratio]{
+                assets/rust/ferris_happy.png
+            }
+            \caption{Rust mascot (Ferris)}
+            \label{fig:Rust}
+        \end{figure}
+    }{
+        \begin{figure}
+            \includegraphics[width=\linewidth, height=2.15cm, keepaspectratio]{
+                assets/webgpu/webgpu.logo.png
+            }
+            \caption{WebGPU, logo}
+            \includegraphics[width=\linewidth, height=2.15cm, keepaspectratio]{
+                assets/webgpu/wgpu.logo.png
+            }
+            \caption{Wgpu logo}
+            \label{fig:Wgpu}
+        \end{figure}
+    }{
+        \begin{figure}
+            \includegraphics[width=\linewidth, height=2.2cm, keepaspectratio]{
+                assets/glTF.logo.png
+            }
+            \caption{glTF}
+            \label{fig:glTF}
+        \end{figure}
+
+    }
+}
+
+
+\section{Final Result}
+\fhtopicslide{Final Result}
+
+\subsection{3D Models}
+\fhslide{
+    % \mediabutton[jsaction={anim..debug("hi")}]{\fbox{show (a)}}
+    \fhdp{
+        \begin{figure}
+            \href{http://localhost:3000/presentation/assets/dragon/Dragon.gif}{
+                \includemedia[
+                    label=mp4-stanford_dragon,
+                    width=\linewidth,
+                    height=5.55cm,
+                    keepaspectratio,
+                    activate=pageopen,
+                    addresource=assets/dragon/Dragon.mp4,
+                    flashvars={
+                            assets/dragon/Dragon.mp4
+                            &autoPlay=true
+                        },
+                    passcontext,
+                ]{
+                    \includegraphics{assets/dragon/Cover1.png}
+                }{
+                    VPlayer.swf
+                }
+            }
+            \caption{Stanford Dragon}
+            \label{gif:Stanford Dragon}
+        \end{figure}
+    }{
+        \only<2->{
+            \begin{figure}
+                \href{http://localhost:3000/presentation/assets/armadillo/Armadillo.gif}{
+                    \includemedia[
+                        label=mp4-armadillo,
+                        width=\linewidth,
+                        height=5.55cm,
+                        keepaspectratio,
+                        activate=pageopen,
+                        addresource=assets/armadillo/Armadillo.mov,
+                        flashvars={
+                                assets/armadillo/Armadillo.mov
+                                &autoPlay=true
+                                &loop=true
+                            },
+                        passcontext,
+                    ]{
+                        \includegraphics{assets/armadillo/Cover.png}
+                    }{
+                        VPlayer.swf
+                    }
+                }
+                \caption{Armadillo}
+                \label{gif:Armadillo}
+            \end{figure}
+        }
+        % \animategraphics[autoplay, loop, width=\textwidth]{20}{assets/dragon/Dragon-}{0}{48}
+    }
+}
+
+\section{How to draw a Triangle}
+\fhtopicslide{How to draw a Triangle}
+
+% Nur das Bild herzeigen, damit die Leute sehen wie eine 
+% Graphics Pipeline ungefähr ausschaut 
+% Ich werde einfach dazu sagen, dass moderne Graphic APIs eine Pipeline
+% darstellen und dass sie "simplified" so ausschaut und dann zu den Shadern die 
+% bei moderen APIs fast jede Stage kontrolliert werden können.
+\subsection{Modern Graphics Pipeline}
+\fhslide{
+    \fhfig{
+        assets/grahpics-pipeline.png
+    }{
+        \linewidth, height=5.8cm, keepaspectratio
+    }{
+        Modern Graphics Pipeline
+    }{
+        fig:Modern-graphics-pipeline
+    }
+}
+
+% Auch wieder nur auflisten und dann auf die ersten 2 eingehen für das
+% Dreieck
+\subsection{Shaders}
+\fhslist{
+    \item  \only<2- >{{\DejaSans ✔️}} Vertex Shader
+    \fhlist{
+        \item Must be always provided
+    }
+    \item  \only<2- >{{\DejaSans ✔️}} Fragment Shader
+    \fhlist{
+        \item Also known as Pixel Shader
+    }
+    \item Compute Shader
+    \fhlist{
+        \item Used for general purpose computation that can be parallized
+    }
+    \item Geomery Shader
+    \fhlist{
+        \item Allows to manipulate primitives (Point/Line/Triangle)
+    }
+    \item Raytracing has 5 shaders and is an extenion
+    \fhlist{
+        \item Ray Generation Shader
+        \item Closest-Hit Shader
+        \item Miss Shader
+        \item Intersection Shader
+        \item Any-Hit Shader
+    }
+}
+
+\subsection{Shader Code}
+\fhslide{
+    \fhdp{
+        \centering
+        \fhfig{
+            assets/code/vertex.wgsl.png
+        }{
+            \linewidth, height=5.6cm, keepaspectratio
+        }{
+            Vertex Code
+        }{
+            fig:vertex-code
+        }
+    }{
+        \centering
+        \fhfig{
+            assets/code/fragment.wgsl.png
+        }{
+            \linewidth, height=5.4cm, keepaspectratio
+        }{
+            Fragment Code
+        }{
+            fig:fragment-code
+        }
+    }
+}
+
+\subsection{Rust code}
+\fhslidebreak{
+    \fhenum{
+        \centering
+        \item Create a Window and a GPU-Instance
+        \item Create a Surface from the Window
+        \item Request for an Adapter (Your GPU)
+        \item Request for a Queue and a Device from the Adapter.
+        \item Create Vertices \\
+        \includegraphics[width=\linewidth, height=3.7cm, keepaspectratio]{
+            assets/code/vertices.png
+        }
+        \framebreak
+        \item Compile the Shader \\
+        \includegraphics[width=\linewidth, height=2.4cm, keepaspectratio]{
+            assets/code/shader_compilation.png
+        }
+        \item Create GPU Buffer and Description \\
+        \includegraphics[width=\linewidth, height=3.2cm, keepaspectratio]{
+            assets/code/gpu-buffer.png
+        }
+        \\\framebreak
+        \includegraphics[width=\linewidth, height=2.3cm, keepaspectratio]{
+            assets/code/layout.png
+        }
+        \item Create Render Pipeline  \\
+        \includegraphics[width=\linewidth, height=4cm, keepaspectratio]{
+            assets/code/render_pipeline.png
+        }
+        \item Draw and submit to Queue \\
+        \includegraphics[width=0.7\linewidth, height=4cm, keepaspectratio]{
+            assets/code/end.png
+        }
+        \item And now to the Result
+    }
+}
+
+\subsection{Result}
+\fhslide{
+    \fhcenter{
+        \begin{figure}
+            \includegraphics[width=\linewidth,height=5.55cm,keepaspectratio]{
+                assets/triangle/red-triangle.png
+            }
+            \caption{Red Triangle}
+            \label{gif:Triangle}
+        \end{figure}
+    }
+}
+
+\section{Conclusion}
+\subsection{Learnings}
+\fhslide{
+    \ctr{
+        \fhlist{
+            \item Rust is AWESOME!!
+            \item<2- > Graphics promgramming involves a lot of Math
+            \item<3- > In Math there is something called a Quaternion.
+            \only<4- >{For further questions please ask Prof. Ostermayer}
+            \item<5- > Drawing Trivial shapes is harder than in OpenGL.\\
+            But with great power comes great responsibility
+        }
+    }
+}
+
+\section{}
+\subsection{}
+\fhtopicslide{
+    Thank You !!
+}
+
+
+% \fhslide{
+%     \fhcenter{
+%         \begin{figure}[H]
+%             \href{http://localhost:3000/presentation/assets/triangle/Triangle.gif}{
+%                 \includemedia[
+%                     label=mp4-triangle,
+%                     width=\linewidth,
+%                     height=5.55cm,
+%                     keepaspectratio,
+%                     activate=pageopen,
+%                     addresource=assets/dragon/Dragon.mp4,
+%                     flashvars={
+%                             assets/dragon/Dragon.mp4
+%                             &autoPlay=true
+%                         },
+%                     passcontext,
+%                 ]{
+%                     \includegraphics{assets/triangle/Triangle.jpg}
+%                 }{
+%                     VPlayer.swf
+%                 }
+%             }
+%             \caption{Triangle with color animation}
+%             \label{gif:Triangle}
+%         \end{figure}
+%     }
+% }
+
+% \begin{fhfrag}
+%     \begin{minted}{rust}
+%         struct Locals {
+%             color: vec4<f32>;
+%         };
+
+%         [[group(0), binding(0)]]
+%         var<uniform> locals: Locals;
+
+%         [[stage(fragment)]]
+%         fn main() -> [[location(0)]] vec4<f32> {
+%             return locals.color;
+%         }
+%     \end{minted}
+
+%     % \begin{lstlisting}
+%     %     struct Locals {
+%     %         color: vec4<f32>;
+%     %     };
+
+%     %     [[group(0), binding(0)]]
+%     %     var<uniform> locals: Locals;
+
+%     %     [[stage(fragment)]]
+%     %     fn main() -> [[location(0)]] vec4<f32> {
+%     %         return locals.color;
+%     %     }
+%     % \end{lstlisting}
+% \end{fhfrag}
+
+
+\end{document}

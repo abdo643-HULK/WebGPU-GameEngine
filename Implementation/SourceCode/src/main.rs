@@ -8,6 +8,7 @@ pub mod loader;
 pub mod mesh;
 pub mod model;
 pub mod triangle;
+pub mod triangle_simple;
 pub mod vertex;
 
 use app::{App, AppOptions};
@@ -23,7 +24,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Armadillo",
         format!("{ASSETS_PATH}/models/armadillo/Armadillo.glb"),
     );
-    // let (title, path) = ("Dragon", format!("{ASSETS_PATH}/models/dragon/Dragon.glb"));
+    // let (title, path) = (
+    //     "Dragon XYZRGB",
+    //     format!("{ASSETS_PATH}/models/dragon-xyzrgb/Dragon_xyzrgb.glb"),
+    // );
+    let (title, path) = ("Dragon", format!("{ASSETS_PATH}/models/dragon/Dragon.glb"));
     // let (title, path) = ("Cube", format!("{ASSETS_PATH}/models/cube/Cube.glb"));
     // let (title, path) = (
     //     "Charizard",
@@ -42,7 +47,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     .add_system(Box::new(loader))
     .run();
 
-    // let program = triangle::run();
+    // triangle::run();
+    // triangle_simple::run();
 
     return Ok(());
 }

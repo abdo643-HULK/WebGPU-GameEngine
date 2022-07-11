@@ -369,6 +369,8 @@ impl GLTFLoader {
                             .into_u32()
                             .collect::<Vec<u32>>();
 
+                        println!("Vertices: {}", positions.len() + indecies.len());
+
                         mesh.insert(Primitive::POSITIONS, positions)
                             .insert(Primitive::NORMALS, normals)
                             .insert(Primitive::TEX_COORDS, tex_coords)
@@ -380,7 +382,7 @@ impl GLTFLoader {
             })
             .collect::<Vec<Vec<Primitive>>>();
 
-        print!("\n");
+        // print!("\n");
 
         self.meshes = meshes;
         self.name = Some(label);
@@ -621,6 +623,23 @@ impl System for GLTFLoader {
                         .unwrap()
                         .update(context, &get_transform(aabb));
                 };
+
+                if let WindowEvent::KeyboardInput {
+                    input:
+                        KeyboardInput {
+                            virtual_keycode: Some(keycode),
+                            ..
+                        },
+                    ..
+                } = event
+                {
+                    match keycode {
+                        VirtualKeyCode::Space => {
+                            self.is_animation_anabled = AnimationLoop::Enable;
+                        }
+                        _ => {}
+                    }
+                }
             }
             Event::RedrawRequested(window_id) if *window_id == context.window().id() => {
                 if let AnimationLoop::Enable = self.is_animation_anabled {
@@ -646,17 +665,35 @@ fn get_transform(aabb: &AABB) -> glam::Mat4 {
     let larger_side = (aabb.max - aabb.min).max_element();
 
     let scale_factor = 1.0_f32 / larger_side;
-    // let aabb = AABB::new(aabb.min * scale_factor, aabb.max * scale_factor);
-    // let center = aabb.center();
+    let aabb = AABB::new(aabb.min * scale_factor, aabb.max * scale_factor);
+    let center = aabb.center();
 
     let model = glam::Mat4::IDENTITY;
     // let translation = glam::Mat4::from_translation((-center).into());
-    let rotation = glam::Mat4::from_axis_angle(glam::Vec3::X, 90.0_f32.to_radians())
-        * glam::Mat4::from_axis_angle(glam::Vec3::Y, 0.0_f32.to_radians())
-        * glam::Mat4::from_axis_angle(glam::Vec3::Z, 180.0_f32.to_radians());
-    let scale = glam::Mat4::from_scale(glam::Vec3::from_array([scale_factor; 3]));
 
-    rotation * scale * model
+    let rotation_x = glam::Mat4::from_axis_angle(glam::Vec3::X, 90.0_f32.to_radians());
+    // let rotation_x = glam::Mat4::from_axis_angle(glam::Vec3::X, 0.0_f32.to_radians());
+
+    let rotation_y = glam::Mat4::from_axis_angle(glam::Vec3::Y, 0.0_f32.to_radians());
+
+    // let rotation_z = glam::Mat4::from_axis_angle(glam::Vec3::Z, 0.0_f32.to_radians());
+    // let rotation_z = glam::Mat4::from_axis_angle(glam::Vec3::Z, 180.0_f32.to_radians()); // Armadillo
+    let rotation_z = glam::Mat4::from_axis_angle(glam::Vec3::Z, 270.0_f32.to_radians()); // Dragon
+
+    let rotation = rotation_x * rotation_y * rotation_z;
+    let rotation = glam::Quat::from_mat4(&rotation);
+
+    // let scale = glam::Mat4::from_scale(glam::Vec3::from_array([scale_factor; 3]));
+    let scale = glam::Vec3::from_array([scale_factor; 3]);
+
+    // let translation = glam::vec3(0., 0., 0.);
+    // let translation = glam::vec3(0., -0.2, 0.); // Armadillo
+    let translation = glam::vec3(0., -0.5, 0.); // Dragon
+
+    let tranform = glam::Mat4::from_scale_rotation_translation(scale, rotation, translation);
+
+    tranform * model
+    // translation * rotation * scale * model
 }
 
 pub trait DrawModel<'a> {

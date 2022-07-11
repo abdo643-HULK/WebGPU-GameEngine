@@ -1,6 +1,6 @@
-use crate::camera::{self, perspective::PerspectiveCamera, Camera, Object3D};
+use crate::camera::{self, perspective::PerspectiveCamera, Camera, CameraType, Object3D};
 
-use std::f32;
+use std::{f32, fmt::Debug, sync::Arc};
 
 use super::Controls;
 
@@ -155,6 +155,19 @@ struct State {
     zoom: f32,
 }
 
+#[derive(Clone)]
+struct EventHandlers {
+    pan_left: Arc<dyn FnMut(f32, glam::Mat4)>,
+}
+
+impl Debug for EventHandlers {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("EventHandlers")
+            .field("pan_left", &"Box<dyn FnMut(f32, glam::Mat4)")
+            .finish()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct OrbitControls<T: camera::Camera = PerspectiveCamera> {
     pub object: T,
@@ -186,6 +199,7 @@ pub struct OrbitControls<T: camera::Camera = PerspectiveCamera> {
 
     last_state: State,
     controller: Controller,
+    event_handlers: EventHandlers,
 }
 
 impl OrbitControls {
@@ -252,12 +266,30 @@ impl<T: camera::Camera> Controls for OrbitControls<T> {
     }
 
     fn update(&mut self) {
+        let quat = glam::Quat::from_rotation_arc(self.object.up(), glam::Vec3::Y);
+        let quat_inverse = quat.inverse();
+
+        let mut last_position = glam::Vec3A::default();
+        let mut last_quat = glam::Quat::default();
+
         let OrbitControls {
             spherical,
             spherical_delta,
             controller,
             ..
         } = self;
+
+        let offset = glam::Vec3A::from(*self.object.position()) - self.target;
+        let offset = quat_inverse * quat * offset;
+
+        spherical.set(SphericalSetter::Vec(offset.into()));
+
+        match self.auto_rotate {
+            AutoRotation::Enable(_) if controller.state == ControllerState::None => {
+                // rotateLeft( self.get_auto_rotation_angle() );
+            }
+            _ => {}
+        }
 
         match self.damping {
             Damping::Disable => {
@@ -303,6 +335,60 @@ impl Default for OrbitControls {
         let zoom = camera.get_zoom();
         let target = glam::Vec3A::ZERO;
 
+        let pan_left = {
+            let mut v = glam::Vec3A::default();
+
+            Arc::new(move |distance: f32, object_matrix: glam::Mat4| {
+                let col = object_matrix.col(0);
+                v.x = col.x;
+                v.y = col.y;
+                v.z = col.z;
+
+                v = v * -distance;
+
+                // panOffset.add(v);
+            })
+        };
+
+        let pan_up = {
+            let mut v = glam::Vec3A::default();
+
+            Arc::new(
+                move |scope: &Self, distance: f32, object_matrix: glam::Mat4| {
+                    match scope.panning {
+                        Pan::Disable => {
+                            let col = object_matrix.col(1);
+                            v.x = col.x;
+                            v.y = col.y;
+                            v.z = col.z;
+                        }
+                        Pan::Enable(_) => {
+                            let col = object_matrix.col(0);
+                            let internal_v = glam::vec3(col.x, col.y, col.z);
+                            v = scope.object.up().cross(internal_v).into()
+                        }
+                    }
+
+                    v = v * distance;
+                    // panOffset.add(v);
+                },
+            )
+        };
+
+        fn dolly_in(scope: &mut OrbitControls, scale: f32) {
+            match scope.object.get_type() {
+                CameraType::Orthographic => scope.scale *= scale,
+                CameraType::Perspective => {
+                    let zoom = scope
+                        .min_zoom
+                        .max(scope.max_zoom.min(scope.object.get_zoom() / scale));
+                    scope.object.set_zoom(zoom);
+                    scope.object.update();
+                    // zoomChanged = true;
+                }
+            }
+        }
+
         Self {
             object: camera,
             target: target.clone(),
@@ -331,6 +417,7 @@ impl Default for OrbitControls {
                 zoom,
             },
             controller: Controller::default(),
+            event_handlers: EventHandlers { pan_left },
         }
     }
 }

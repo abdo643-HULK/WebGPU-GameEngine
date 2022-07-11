@@ -1,0 +1,926 @@
+% =============================================================================
+% FH corporate design LaTeX slideset template (unofficial)
+% Licence: GPLv3
+%
+%   (c) DI Dr. Erik Sonnleitner, 2012 - 2017
+%       es@delta-xi.net / erik.sonnleitner@fh-hagenberg.at
+%       (legacy: esonnleitner@faw.jku.at)
+% University of Applied Sciences Upper Austria, Hagenberg
+% Version: 4.0 (2017-09-12)
+% =============================================================================
+%
+% Version history:
+%  * 4.0 (2017.09.12)
+%     - New template is now wide-screen (legacy 4:3 won't get updates anymore)
+%     - Footer now reflects official FH PPT template
+%     - Header (frameline) containing section title is much smaller,
+%       providing more space for actual content
+%     - \fhrule after subsection title shorter
+%     - \fhdp with 2 arguments, auto-splitting screen 50:50
+%     - \newfontscheme allows using *SANE* fonts which can be configured
+%       in this template. Allows using standard TTF and OTF fonts. This feature
+%       *requires* the use of xelatex instead of pdflatex !
+%       I personally use Raleway and Consolata.
+%  * 3.2 (2017.06.21)
+%     - \PresVersion as optional Command for slide versioning, showed on firstslide
+%  * 3.1 (2016.02.25)
+%     - \fhcode[width]{algname}{algorithm}, using algorithm package
+%     - \fhcode{algname}{algorithm}, using algorithm package
+%     - \Gr for gray text
+%  * 3.0 (2015-09-01)
+%     - \fhtopicslide{topic} - blank slide with \huge topic h/v centered 
+%     - \CodeAsm: set language to asm
+%     - \cmd - \texttt + grey background
+%     - \fhfragplain - like \fhfrag, but with black slide (no heading, etc)
+%     - \fhfrag  - fragile slide environment (!)
+%     - \fhdpt - dualpage, aligned on top
+%     - \fheq - equation env
+%     - \fhalign - align env
+%     - \fhalignx - align* env
+%     - \fhmp - minipage
+%     - \fhcmp - centered minipage
+%     - \essential, \moot markers
+%     - \fhquadpage
+%  * 2.1 (2015-08-12)
+%     - \fhcenter, \fhright, \fhleft
+%     - \fhcimg (centered image)
+%     - \fhurlref
+%     - \ctr
+%  * 2.0 (2015-08-04)
+%     - Converted to FH
+%  * 1.1 (2012-02-07)
+%     - altered enumerate labels (strictly arabic numbers)
+%     - added \fhblock
+%  * 1.0 (2012-01-25)
+%     - first public release
+
+% 16:9 - Welcome to the future!
+\documentclass[aspectratio=169,\DefaultFontSize,xcolor={dvipsnames}]{beamer}
+\usepackage[ngerman,english]{babel}
+%\usepackage[english]{babel}
+\usepackage{microtype}
+%\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
+%\usepackage{mathabx}
+\usepackage{wrapfig}
+\usepackage{color}
+%\usepackage{ragged2e}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\usepackage{bbding}
+\usepackage{tikz}
+\usetikzlibrary{shapes.callouts,decorations.pathmorphing,shapes.misc,positioning}
+\usepackage{xparse}
+\usepackage{xcolor}
+\usepackage{fixltx2e}
+\usepackage{tabularx}
+\usepackage{listings}
+% WARNING: \Return defined by algorithm[x]; return keystroke used otherwise??
+% \usepackage{keystroke}
+\usepackage{verbatim}
+\usepackage{fixltx2e}
+\usepackage{caption}
+\usepackage{algpseudocode,algorithmicx,algorithm}
+\usepackage{smartdiagram}
+\usefonttheme{professionalfonts}
+\usefonttheme{serif}
+\usepackage{fontspec}
+\usepackage{eqparbox}
+\usepackage{nicefrac}
+\usepackage{mathtools}
+\usepackage{helvet}
+\usepackage{metalogo}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{syntonly}
+
+% -----------------------------------------------------------------------------
+% Themes
+% -----------------------------------------------------------------------------
+% Main presentation layout definition, done by theme packages
+\usetheme{Berlin}
+% AnnAbor, ANtines, Bergen, Berkeley, Berlin, Boadilla, boxes, CambrigsUS,
+% Copenhagen, Darmstadt, default, Dresden, Frankfurt, Goettingen, Hannover,
+% Ilmenau, JuanLesPins, Luebeck, Madris, Malmoe, Marburg, Montepellier,
+% PaloAlto, Pittsburgh, Rochester, Singapore, Szeged, Warsaw
+
+\usecolortheme{seagull}
+%\usecolortheme{whale}
+%\usecolortheme{orchid}
+% albatross, beaver, beetle, crane, default, dolphin, dove, fly, lily, orchid,
+% rose, seagull, seahorse, sidebartab, structure, whale, wolverine
+
+\usefonttheme{professionalfonts}
+% default, professionalfonts, serif, structurebold, structureitalicserif,
+% structuresmallcapsserif
+
+\useinnertheme{rounded}
+% circles, default, inmargin, rectangles, rounded
+
+\useoutertheme{split}
+%\useoutertheme{infolines}
+% default, infolines, miniframes, shadow, sidebar, smoothbars, smoothtree,
+% split, tree
+
+\usepackage{beamerthemeboxes}
+% \usepackage{beamerthemeboxes}
+% beamerthemebars, beamerthemeclassic, beamerthemelined, beamerthemeplain,
+% beamerthemeshadow, beamerthemesidebar, beamerthemesidebar-tab, 
+% beamerthemesidebardark, beamerthemesidebardark-tab, beamerthemetree,
+% beamerthemetree-bars, beamerthemesplit, beamerthemeboxes
+
+% define template path
+% update 2015/09/08: use \provide rather than \new, so the new command is only
+%   defined, if the presentation source does not do so
+%\newcommand{\templatepath}{../../../FH-Beamer-Template}
+\providecommand{\templatepath}{../../../FH-Beamer-Template}
+
+% -----------------------------------------------------------------------------
+% Hacks for algorithm package
+% -----------------------------------------------------------------------------
+% for pseudocode: use texttt instead of textsf (default)
+\algrenewcommand\textproc{}  %so functions don't use \textsc
+\algrenewcommand\alglinenumber[1]{\scriptsize\sffamily #1}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\algrenewcommand\algorithmicend{\texttt{\textbf{end}}}
+\algrenewcommand\algorithmicdo{\texttt{\textbf{do}}}
+\algrenewcommand\algorithmicwhile{\texttt{\textbf{while}}}
+\algrenewcommand\algorithmicfor{\texttt{\textbf{for}}}
+\algrenewcommand\algorithmicforall{\texttt{\textbf{for all}}}
+\algrenewcommand\algorithmicloop{\texttt{\textbf{loop}}}
+\algrenewcommand\algorithmicrepeat{\texttt{\textbf{repeat}}}
+\algrenewcommand\algorithmicuntil{\texttt{\textbf{until}}}
+\algrenewcommand\algorithmicprocedure{\texttt{\textbf{procedure}}}
+\algrenewcommand\algorithmicfunction{\texttt{\textbf{function}}}
+\algrenewcommand\algorithmicif{\texttt{\textbf{if}}}
+\algrenewcommand\algorithmicthen{\texttt{\textbf{then}}}
+\algrenewcommand\algorithmicelse{\texttt{\textbf{else}}}
+\algrenewcommand\algorithmicrequire{\texttt{\textbf{Require:}}}
+\algrenewcommand\algorithmicensure{\texttt{\textbf{Ensure:}}}
+\algrenewcommand\algorithmicreturn{\texttt{\textbf{return}}}
+
+
+
+% -----------------------------------------------------------------------------
+% Template mods: Headline, footline, logo, ...
+% -----------------------------------------------------------------------------
+% The following stuff is for the institute/department logo, at top right corner
+\usepackage[absolute,overlay]{textpos}
+\pgfdeclareimage[height=1.5cm]{logo}{\templatepath/fh-ooe.png}
+\setlength{\TPHorizModule}{52mm}
+\setlength{\TPVertModule}{1mm}
+\newcommand{\MyLogo}{%
+    \begin{textblock}{14}(2.6,-1.8)
+        \pgfuseimage{logo}
+    \end{textblock}
+}
+
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+    \MyLogo
+    \oldmacro\hfill}
+
+% Remove navigation symbols, add slide numbering instead
+\setbeamertemplate{navigation symbols}{}
+
+% FrameTitle - top line, gray background with section title
+\setbeamertemplate{frametitle} {
+    %\definecolor{ilpablue}{rgb}{0.16,0.43,0.75}
+    \definecolor{myblack}{rgb}{0,0,0}
+    \definecolor{myred}{rgb}{0.84, 0.09, 0.41}
+    \definecolor{mylightgray}{rgb}{0.90,0.90,0.90}
+    \definecolor{mylightred}{rgb}{0.94,0.85,0.90}
+    \definecolor{fhred}{rgb}{0.75,0.15,0.093}
+    \definecolor{fhlightred}{rgb}{0.75,0.40,0.35}
+    %\setbeamercolor{headlinecolor}{fg=myblack,bg=fhlightred}
+    %\setbeamercolor{headlinecolor}{fg=myblack,bg=mylightred}
+    \setbeamercolor{headlinecolor}{fg=myblack,bg=mylightgray}
+    \vspace{-1.5mm}
+
+    % Variant 1: Slim gray rectangle across entire slide
+    %\begin{beamercolorbox}[wd=\paperwidth,ht=1.6ex,dp=.5ex]{headlinecolor}
+    %
+    % Variant 2: Rounded rectangle, approx. half of the slide
+    \begin{beamercolorbox}[wd=0.5\paperwidth,ht=1.3ex,dp=0ex,rounded=true]{headlinecolor}
+        \hspace{-5.2mm}\insertframetitle
+    \end{beamercolorbox}
+}
+
+% Footline - bottom line, changed to reflect FH corporate slide design
+\setbeamertemplate{footline}{
+    \leavevmode
+    % \usebeamerfont{author in head/foot} \PresAuthor -- \emph{\PresFooter}\hfill \insertframenumber/\inserttotalframenumber
+
+    % \pgfsetfillopacity{0} % transparent?? doesnt work
+    {\color{alizarin}\hspace{7mm}\rule{12cm}{2.5pt}}
+
+    \vspace{2mm}
+    {\scriptsize \hspace{7mm}PAGE \insertframenumber/\inserttotalframenumber \hspace{5mm}
+        \PresAuthor \ -- \PresFooter}
+
+    \begin{textblock}{0}(2.53,79.5)
+        \includegraphics[width=2.3cm]{\templatepath/fh-logo-wide.jpg}
+    \end{textblock}
+
+    \vspace{2.5mm}
+    \vskip0pt
+}
+
+% Set text margins left and right, force to use much space for text
+\setbeamersize{text margin left=.5cm,text margin right=.5cm}
+
+% Add institute/department logo to headline
+%\addtobeamertemplate{headline}{} { \MyLogo }
+%\addtobeamertemplate{headline}{} { }
+
+% Set institute logo
+%\logo{\includegraphics[height=0mm]{\templatepath/institute-logo.png}}
+
+% Define new column types for tabularx: fixed-width left/centered/right
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% Define color for our red hrule and bullets
+\definecolor{alizarin}{rgb}{0.76, 0.13, 0.28}
+
+% Define a square for the itemize labels
+\newsavebox{\mysquare}
+\savebox{\mysquare}{\textcolor{alizarin}{\rule[.5mm]{1mm}{1mm}}}
+
+% Set itemize labels
+\setbeamertemplate{itemize item}{\usebox{\mysquare}}
+\setbeamertemplate{itemize subitem}{ {\color{alizarin}---} }
+\setbeamertemplate{itemize subsubitem}{$\bullet$}
+
+\setbeamertemplate{enumerate item}[default]
+
+% Set itemize/enumerate font sizes
+\setbeamerfont{itemize body}{size=\small}
+%\setbeamerfont{itemize subbody}{size=\footnotesize}
+\setbeamerfont{itemize subbody}{size=\scriptsize}
+\setbeamerfont{itemize subsubbody}{size=\scriptsize}
+
+\setbeamerfont{enumerate body}{size=\small}
+\setbeamerfont{enumerate subbody}{size=\footnotesize}
+\setbeamerfont{enumerate subsubbody}{size=\scriptsize}
+
+
+
+% -----------------------------------------------------------------------------
+% Hyphenation (based on \PresTextLayout variable)
+% -----------------------------------------------------------------------------
+% Text layouting (hyphenation, justification)
+%   Options:
+%      0   Don't modify anything, set text as-is (no hyphenation/justification)
+%      1   Never ever hyphenate anything, but justify text.
+%      2   Hyphenate only when absolutely necessary, and justify text.
+%      3   Hyphenate words whenever possible and justify text.
+
+
+\ifthenelse{ \PresTextLayout = 0} {
+    \hyphenpenalty=10000000
+}{}
+\ifthenelse{ \PresTextLayout = 1} {
+    \usepackage{ragged2e}
+    \hyphenpenalty=10000000
+    \justifying
+}{}
+\ifthenelse{ \PresTextLayout = 2} {
+    \usepackage{ragged2e}
+    \hyphenpenalty=500
+    \justifying
+}{}
+\ifthenelse{ \PresTextLayout = 3} {
+    \usepackage{ragged2e}
+    \hyphenpenalty=0
+    \justifying
+}{}
+
+% -----------------------------------------------------------------------------
+% FH Macros
+% -----------------------------------------------------------------------------
+
+
+% \fhrule - a red horizontal rule
+\newcommand{\fhrule}{
+    % {\color{alizarin} \rule{12cm}{1pt} \\ } \vspace{0.2cm}
+    \vspace{-0.15cm}
+    \normalsize{
+        {\color{alizarin} \rule{ 15cm }{1pt} \\ } \vspace{0.2cm}
+    }
+}
+
+\newcommand{\fhruleshort}{
+    % {\color{alizarin} \rule{12cm}{1pt} \\ } \vspace{0.2cm}
+    \vspace{-0.15cm}
+    \normalsize{
+        {\color{alizarin} \rule{ 5cm }{1pt} \\ } \vspace{0.2cm}
+    }
+}
+
+\newcommand{\Pt}{$\bullet$ }
+
+% \fhfirstslide: Build introduction slide by \def's given in src file
+\newcommand{\fhfirstslide}{
+    \hfuzz=\maxdimen
+    \begin{frame}
+        \frametitle{\hspace{6mm}\small{ \PresShortTitle } }
+        \begin{flushright}
+            \large{\textbf{ \PresTitle } }
+
+            \vspace{0.2cm}
+            % Meta-info, Author
+            \normalsize{
+                \PresSubTitle \\
+                \PresAuthorTitle
+            }
+
+            {\color{alizarin}  \rule{7cm}{1pt}\\ }
+
+            \vspace{0.2cm}
+            \large{
+                \PresHeading
+
+                \ifdefined\PresVersion
+                    \vspace{2mm}
+                    {\small version \textbf{\PresVersion}}
+                \fi
+            }
+
+        \end{flushright}
+
+        \begin{textblock}{0}(0.25,{\IntroImageXPos})
+            %\begin{textblock}{0}(0.1,30.3)
+            \includegraphics[height=\IntroImageHeight]{\IntroImage}\\
+            \begin{textblock}{100}(0.2,72)
+                \includegraphics[width=1cm]{\templatepath/cc-by-nc-sa.png}\\
+                %\includegraphics[width=1cm]{img/cc-by-nc-sa.png}\\
+                \vspace{-0.15cm}
+                {\tiny \IntroImageText}
+                %{\tiny "Rogue Android": CC-BY-NC-SA via http://picphotos.net}
+            \end{textblock}
+        \end{textblock}
+    \end{frame}
+}
+
+
+% \ssec: shortcut for \subsection
+\newcommand{\ssec}[1]{\subsection{#1}}
+
+% \fhslide environment -- this saves time & money ;)
+\newcommand{\fhslide}[2][] {
+    %\transfade
+    %\begin{frame}[shrink]
+    %\begin{frame}[allowpagebreak,t]
+    \begin{frame}[t]
+        \vspace{-.8mm}%added 09/2017
+        \frametitle{\hspace{6mm}\small{ \secname} }
+        \vspace{-1.5mm}
+        \textbf{ \large{ \subsecname } } \\
+        \ifthenelse{ \isempty{#1} }
+        { \fhruleshort }
+        {}
+        \vspace{-2mm}%added 09/2017
+
+        #2
+    \end{frame}
+}
+
+\newcommand{\fhslidebreak}[2][] {
+    %\transfade
+    %\begin{frame}[shrink]
+    %\begin{frame}[allowpagebreak,t]
+    \begin{frame}[allowframebreaks, t]
+        \vspace{-.8mm}%added 09/2017
+        \frametitle{\hspace{6mm}\small{ \secname} }
+        \vspace{-1.5mm}
+        \textbf{ \large{ \subsecname } } \\
+        \ifthenelse{ \isempty{#1} }
+        { \fhruleshort }
+        {}
+        \vspace{-2mm}%added 09/2017
+
+        #2
+    \end{frame}
+}
+
+
+% \fhtopicslide: New topic, centered, large, textbf
+\newcommand{\fhtopicslide}[1]{
+    \subsection*{ }   % new 2017.04
+    \fhslide{
+        \vspace{2.5cm}
+        \ctr{{\Large \hi{#1}}}
+    }
+}
+
+
+\newenvironment{fhfslide}[1]
+{\begin{frame}[fragile]{}
+        \frametitle{\small{\secname}}
+        \textbf{\large{\subsecname}}\newline
+        \fhrule
+        #1
+        }
+        {\end{frame}}
+
+
+\newenvironment{fhfrag}
+% XXX: old \fhfrag had allowframebreks!
+%{\begin{frame}[t,allowframebreaks=0.8,fragile,environment=fhfrag]\frametitle{\small{\secname}}\textbf{\large{\subsecname}}\newline\fhrule}
+{\begin{frame}[t,fragile,environment=fhfrag]\vspace{-.8mm}\frametitle{\hspace{6mm}\small{\secname}}\vspace{-1.5mm}\textbf{\large{\subsecname}}\newline\fhruleshort\vspace{-2mm}}
+        {\end{frame}}
+
+
+
+\newenvironment{fhfragnb}
+{\begin{frame}[t,fragile,environment=fhfragnb]\frametitle{\small{\secname}}\textbf{\large{\subsecname}}\newline\fhrule}
+        {\end{frame}}
+
+% fragile with *nothing* else (no headline, ruler, etc)
+\newenvironment{fhfragplain}
+{\begin{frame}[t,squeeze,fragile,environment=fhfragplain]}
+        {\end{frame}}
+
+
+
+%% \fhslidef environment -- "fragile" version
+%\newcommand{\fhslidef}[1]{
+%\begin{fhfslide}
+%#1
+%\end{fhfslide}
+%}
+
+%% \fhslidef environment -- "fragile" version
+%\newcommand{\fhslidef}[2][] {
+%   \transfade
+%   %\begin{frame}[shrink]
+%   %\begin{frame}[allowpagebreak,t]
+%   \begin{frame}[t,fragile]
+%       % \frametitle{ \subsecname \\ \small{ \secname} }
+%       \frametitle{ \small{ \secname} }
+%       \textbf{ \large{ \subsecname } } \\
+%       %\ifthenelse{ \equal{#1}{\string noline}}
+%       \ifthenelse{ \isempty{#1} }
+%         { \fhrule }
+%         {}
+%       #2
+%   \end{frame}
+%}
+
+% AlgDef: Enables us to write Do/DoWhile Loops (instead of Repeat/Until)
+\algdef{SE}[DOWHILE]{Do}{DoWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+% Note: use non-stared variant of \caption to re-enable alg numbering
+\newcommand{\fhcode}[3][9cm]{
+    \ctr{
+        \begin{minipage}{#1}
+            \begin{algorithm}[H]
+                \caption*{\texttt{#2}}
+                \label{alg:#2}
+                \small
+                \begin{algorithmic}[1]
+                    #3
+                \end{algorithmic}
+            \end{algorithm}
+        \end{minipage}
+    }
+}
+
+
+% \fhlist
+\newcommand{ \fhlist }[1] {
+    \begin{itemize}
+        #1
+    \end{itemize}
+}
+
+% \fhenum
+\newcommand{ \fhenum}[1] {
+    \begin{enumerate}
+        #1
+    \end{enumerate}
+}
+
+
+% \fhdpt - \fhdualpage with text on top
+\newcommand{\fhdpt}[4]{
+    \begin{columns}[t]
+        \column{#1\textwidth}
+        #3
+        \column{#2\textwidth}
+        #4
+    \end{columns}
+}
+
+% \fhdualpage
+\newcommand{ \fhdualpage }[4]{
+    \begin{columns}
+        \column{#1\textwidth}
+        #3
+        \column{#2\textwidth}
+        #4
+    \end{columns}
+}
+
+% \fhdualpage with auto-50/50 split
+\newcommand{ \fhdp }[2]{
+    \begin{columns}
+        \column{0.5\textwidth}
+        #1
+        \column{0.5\textwidth}
+        #2
+    \end{columns}
+}
+
+% \fhtriplepage
+\newcommand{ \fhtriplepage }[6]{
+    \begin{columns}
+        \column{#1\textwidth}
+        #4
+        \column{#2\textwidth}
+        #5
+        \column{#3\textwidth}
+        #6
+    \end{columns}
+}
+
+% Like \fhtriplepage, but auto 33:33:33 split
+\newcommand{ \fhtp }[3]{
+    \begin{columns}[t]
+        \column{.32\textwidth}
+        #1
+        \column{.32\textwidth}
+        #2
+        \column{.32\textwidth}
+        #3
+    \end{columns}
+}
+
+% \fhquadpage
+\newcommand{ \fhquadpage }[8]{
+    \begin{columns}
+        \column{#1\textwidth}
+        #5
+        \column{#2\textwidth}
+        #6
+        \column{#3\textwidth}
+        #7
+        \column{#4\textwidth}
+        #8
+    \end{columns}
+}
+
+% \fhblock
+\newcommand{ \fhblock}[2] {
+    \begin{block}{#1}
+        #2
+    \end{block}
+}
+
+% \fhfig: filename, width, caption, label
+\newcommand { \fhfig }[4]{
+    \begin{figure}
+        \includegraphics[width=#2]{#1}
+        \caption{#3}
+        \label{#4}
+    \end{figure}
+}
+
+% \fhimg: like figure, but without caption+label (e.g. for design only)
+\newcommand{\fhimg}[2][0.92\paperwidth]{
+    \includegraphics[width=#1]{#2}
+}
+
+\newcommand{\fhcimg}[2][0.92\paperwidth]{
+    \begin{center}
+        \fhimg[#1]{#2}
+    \end{center}
+}
+
+% just damn center
+\newcommand{\ctr}[1]{
+    \begin{center}#1\end{center}
+}
+
+% \fhwref: reference
+\newcommand { \fhwref }[1]{
+    \begin{textblock*}{6cm}(9cm,0.2cm)
+        \begin{tiny}
+            \textbf{Src:} #1
+        \end{tiny}
+    \end{textblock*}
+}
+
+% \fhref: reference
+\newcommand { \fhref }[1]{
+    \begin{textblock}{1.8}(0.1,90)
+        \begin{scriptsize}
+            \textbf{References:} #1
+        \end{scriptsize}
+    \end{textblock}
+}
+
+% \fhurlref: url reference
+\newcommand { \fhurlref }[1]{
+    \begin{textblock}{1.8}(0.1,90)
+        \begin{scriptsize}
+            \textbf{References:} \url{#1}
+        \end{scriptsize}
+    \end{textblock}
+}
+
+
+% \essential: mark slide content as essential
+\newcommand{\essential}{
+    \begin{textblock}{0}(0.01,5)
+        \includegraphics[height=.45cm]{\templatepath/important2.png}
+    \end{textblock}%
+}
+
+
+% \moot: mark slide content as moon/not for learning
+\newcommand{\moot}{
+    \begin{textblock}{0}(0.01,5.5)
+        %\includegraphics[height=.4cm]{../_template/crossed-blur.png}
+        \includegraphics[height=.4cm]{\templatepath/crossed-blur.png}
+    \end{textblock}
+}
+
+
+
+
+% \fhslist: slide with only a list
+\newcommand{\fhslist}[1]{
+    \fhslide{
+        \fhlist{
+            #1
+        }
+    }
+}
+
+% \fhcenter
+\newcommand{\fhcenter}[1]{
+    \begin{center}
+        #1
+    \end{center}
+}
+
+% \fhright
+\newcommand{\fhright}[1]{
+    \begin{flushright}
+        #1
+    \end{flushright}
+}
+
+% \fhleft
+\newcommand{\fhleft}[1]{
+    \begin{flushleft}
+        #1
+    \end{flushleft}
+}
+
+% \fhmp - minipage
+\newcommand{\fhmp}[2]{
+    \begin{minipage}{#1}
+        #2
+    \end{minipage}
+}
+
+% \fhcmp - centered minipage
+\newcommand{\fhcmp}[2]{
+    \begin{center}
+        \fhmp{#1}{#2}
+    \end{center}
+}
+
+% \fhalign
+\newcommand{\fhalign}[1]{
+    \begin{align}
+        #1
+    \end{align}
+}
+
+% \fhalignx
+\newcommand{\fhalignx}[1]{
+    \begin{align*}
+        #1
+    \end{align*}
+}
+
+% \fheq
+\newcommand{\fheq}[1]{
+    \begin{equation}
+        #1
+    \end{equation}
+}
+
+
+% \cmd: alias for \texttt
+%\newcommand{\cmd}[1]{\texttt{#1}}
+
+% \cmd (new): Texttt + grey background
+\newcommand\cmd[2][]{~\tikz[overlay]\node[fill=gray!20,inner sep=2pt, anchor=text, rectangle, rounded corners=1mm,font=\ttfamily,#1]{#2};\phantom{\texttt{#2}}\hspace{3pt}}
+
+
+
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+% White box for covering stuff
+\newcommand{\whitebox}[2]{
+    \begin{textblock}{0}(0.0,#1)
+        {\color{white}\rule{2.5cm}{#2}}
+    \end{textblock}
+}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+
+
+%-Comment bubbles--------------------------------------------------------------
+\pgfkeys{%
+    /calloutquote/.cd,
+    width/.code                   =  {\def\calloutquotewidth{#1}},
+    position/.code                =  {\def\calloutquotepos{#1}},
+    author/.code                  =  {\def\calloutquoteauthor{#1}},
+    /calloutquote/.unknown/.code  =  {\let\searchname=\pgfkeyscurrentname
+            \pgfkeysalso{\searchname/.try=#1,
+                /tikz/\searchname/.retry=#1},\pgfkeysalso{\searchname/.try=#1,
+                /pgf/\searchname/.retry=#1}}
+}
+
+\newcommand\calloutquote[2][]{%
+    \pgfkeys{/calloutquote/.cd,
+        width               = 5cm,
+        position            = {(0,-1)},
+        author              = {}}
+    \pgfqkeys{/calloutquote}{#1}
+    \node [rectangle callout,callout relative pointer={\calloutquotepos},
+        text width=\calloutquotewidth,/calloutquote/.cd, #1]
+    (tmpcall) at (0,0) {#2};
+    \node at (tmpcall.pointer){\calloutquoteauthor};
+}
+
+\newcommand\bash[2][]{\tikz[overlay]\node[fill=gray!20,inner sep=2pt, anchor=text, rectangle, rounded corners=1mm,font=\ttfamily,#1]{#2};\phantom{\texttt{#2}}\hspace{3pt}}
+
+% Basic orientation for bubble arrows
+\newcommand{\TopLeft}{(-1,1)}
+\newcommand{\TopRight}{(1,1)}
+\newcommand{\BottomLeft}{(-1,-1)}
+\newcommand{\BottomRight}{(1,-1)}
+
+
+% Usage: \bubble{position (x,y)}{bubble width}{arrow direction}{text}
+\newcommand{\bubble}[4]{
+    \begin{textblock}{0}#1
+        \begin{tikzpicture}
+            \calloutquote[width=#2,position={#3},fill=LimeGreen!90,rounded corners]{#4}
+        \end{tikzpicture}
+    \end{textblock}
+}
+%-End Bubble Code--------------------------------------------------------------
+
+
+\newcommand{\hi}[1]{\textbf{#1}}
+
+
+% -- lst listings --
+\definecolor{keywords}{HTML}{8A4A0B}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{comments}{HTML}{868686}
+\definecolor{myblue}{RGB}{20,105,176}
+
+% language definition for assembly (rudimentary)
+\lstdefinelanguage{asmx86}{
+    keywords={.section,.data,.text, .globl, movl, je, cmpl, jle, jmp,
+            int, incl},
+    comment=[l]{\#},
+    alsoletter={.}, % add . as char to be used in keywords
+}
+
+\lstset{
+    basicstyle=\footnotesize\ttfamily,
+    backgroundcolor=\color{background},
+    numbers=left,
+    firstnumber=0,
+    stepnumber=2,
+    numberstyle=\tiny\color{mygray},
+    numbersep=4pt,
+    commentstyle=\color{comments},
+    frame=lines,
+    frameround=ftff,
+    tabsize=4,
+    keywordstyle=\color{myblue}\textbf,
+    morekeywords={public,class,static,void,struct,new,while,null,if,else,return,for,final,private}
+}
+
+% TODO: remove that ...
+\newcommand{\CodeAsm}{
+    \lstset{
+        language=asmx86
+    }
+}
+
+% supserscript
+\newcommand{\tss}[1]{\textsuperscript{#1}}
+
+% monospaced
+\newcommand{\Tt}[1]{\texttt{#1}}
+
+
+% ------------------------------------------------------------------------------
+%xcolor + dvipsnames:
+%   Apricot     Cyan        Mahogany        ProcessBlue     SpringGreen
+%   Aquamarine      Dandelion       Maroon      Purple      Tan
+%   BitterSweet     DarkOrchid      Melon       RawSienna       TealBlue
+%   Black       Emerald     MidnightBlue        Red     Thistle
+%   Blue        ForestGreen     Mulberry        RedOrange       Turquoise
+%   BlueGreen       Fuchsia     NavyBlue        RedViolet       Violet
+%   BlueViolet      Goldenrod       OliveGreen      Rhodamine       VioletRed
+%   Brickred        Gray        Orange      RoyalBlue       White
+%   Brown       Green       OrangeRed       RoyalPurple     WildStrawberry
+%   BurntOrange     GreenYellow     Orchid      RubineRed       Yellow
+%   CadetBlue       JungleGreen     Peach       Salmon      YellowGreen
+%   CarnationPink       Lavender        Periwinkle      SeaGreen        YellowOrange
+%   Cerulean        LimeGreen       PineGreen       Sepia
+%   CornflowerBlue      Magenta     Plum        SkyBlue
+% --> see http://www.namsu.de/Extra/pakete/Xcolor.html
+
+\newcommand{\Gr}[1]{\textcolor{gray}{#1}}
+\newcommand{\Rd}[1]{\textcolor{red}{#1}}
+\newcommand{\Ma}[1]{\textcolor{magenta}{#1}}
+\newcommand{\Bl}[1]{\textcolor{blue}{#1}}
+%\newcommand{\Gn}[1]{\textcolor{green}{#1}}
+%\newcommand{\Gn}[1]{\textcolor{ForestGreen}{#1}}
+\newcommand{\Gn}[1]{\textcolor{ForestGreen}{#1}}
+\newcommand{\Og}[1]{\textcolor{orange}{#1}}
+
+% Use Raleway as default font, and Inconsolata as monospaced font.
+% Strictly requires the use of xelatex instead of pdflatex, and of course,
+% the fonts installed (should be contained in the template directory)
+\newcommand{\newfontscheme}{
+    \fontspec[Path = \templatepath/fonts/]{Raleway-Regular.ttf}
+    %\fontspec[Path = \templatepath/fonts/]{FuturaLT.ttf}
+    \setmainfont[
+        BoldFont={Raleway-Bold},
+        ItalicFont={Raleway-Regular-Italic},
+        BoldItalicFont={Raleway-Bold-Italic},
+        Path = \templatepath/fonts/,
+    ]{Raleway-Regular.ttf}
+    \setmonofont[Path = \templatepath/fonts/]{Inconsolata-Bold.ttf}
+}
+
+\newcommand{\AcknowledgementsADS}{
+    \section{About these slides}
+    \subsection{Acknowledgements \& Copyrights}
+    \fhslide{
+        These slides have been created by \hi{Erik Sonnleitner}, University of
+        Applied Sciences Upper Austria, Hagenberg Campus, Softwarepark 11, 4232
+        Hagenberg i.M., using \XeTeX{} and \LaTeX{}. Contact:
+        \texttt{erik.sonnleitner@fh-hagenberg.at}.
+
+        \vspace{4mm}
+        The slideset is based on various other materials available online, which
+        are copyrighted by their respective authors:
+        \fhlist{
+            \item \hi{Werner Nutt}, Free University of Bolzano
+            \item \hi{Kurt Ranalter}, University of Verona
+            \item \hi{Michael Böhlen}, University of Zürich
+            \item \hi{Roberto Sebastiani}, University of Trento
+            \item \hi{Kevin Wayne} and \hi{Robert Sedgewick}, "Algorithms"
+            (Addison Wesley, 4\tss{th} ed. 2011), Princeton University, US.
+            \item \hi{T.H. Cormen, C.E. Leiserson, R.L. Rivest, C. Stein}, "Introduction to
+            Algorithms" (The MIT press, 3\tss{rd} ed. 2009),
+            Massachusetts Institute of Technology, US.
+        }
+
+        \vspace{3mm}
+        You may distribute (or take excerpts from) these slides as PDFs, but please
+        retain this copyright notice along with contact information of the
+        author (from whom the original \TeX{} sources can be requested).
+    }
+}
+
+\newcommand{\BS}{\textbackslash}
+
+\newcommand{\vs}{\vspace{3mm}}
+
+% Multi-line cell: \mlcell
+\newcommand{\mlcell}[2][c]{%
+    \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+
+% Cell color macros for tables
+\newcommand{\CCG}{\cellcolor{green!25}}
+\newcommand{\CCB}{\cellcolor{blue!25}}
+\newcommand{\CCR}{\cellcolor{red!25}}
+
+
+
+\newcommand{\PK}[1]{\underline{#1}}
+\newcommand{\FK}[1]{\dashuline{#1}}  % needs ulem package!
+

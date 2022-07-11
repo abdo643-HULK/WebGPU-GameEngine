@@ -1,0 +1,99 @@
+/* @import url('reveal.js/dist/reveal.css'); */
+@import url('pdfjs-dist/web/pdf_viewer.css');
+
+:root {
+	--toolbar-bg-color: rgba(56, 56, 61, 1);
+	--toolbar-border-color: rgba(12, 12, 13, 1);
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0px;
+	padding: 0px;
+}
+
+#viewerContainer,
+#viewerContainer * {
+	box-sizing: unset;
+}
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	color: white;
+}
+
+body {
+	background-color: rgba(42, 42, 46, 1);
+}
+
+#app {
+	height: inherit;
+	width: inherit;
+}
+
+#viewerContainer {
+	overflow: auto;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.toolbar {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	left: 0;
+	right: 0;
+	z-index: 9999;
+	cursor: default;
+	background-color: var(--toolbar-bg-color);
+	box-shadow: 0 1px 0 var(--toolbar-border-color);
+	margin-block-end: 0.5em;
+	padding: 0.3em;
+}
+
+#fullscreenBtn {
+	background: none;
+	border: 0 none;
+	position: relative;
+	cursor: pointer;
+	width: 28px;
+	height: 28px;
+}
+
+#fullscreenBtn::before {
+	--_icon: url('/toolbarButton-presentationMode.svg');
+	-webkit-mask-image: var(--_icon);
+	mask-image: var(--_icon);
+
+	-webkit-mask-size: cover;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-size: contain; /* OR cover OR fixed values */
+	mask-position: center;
+	mask-repeat: no-repeat;
+
+	content: '';
+	position: absolute;
+	display: inline-block;
+	background-color: white;
+
+	top: 0;
+	left: 0;
+	height: 28px;
+	width: 28px;
+}
+
+.visually-hidden {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
